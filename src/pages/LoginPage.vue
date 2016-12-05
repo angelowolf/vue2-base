@@ -1,5 +1,5 @@
 <script>
-  import {loginUrl, getHeader, userUrl} from './../config'
+  import {loginUrl, getHeader} from './../config'
   import {mapState} from 'vuex'
 
   export default{
@@ -19,10 +19,8 @@
     methods: {
       loginForm () {
         const postData = {
-          grant_type: 'password',
-          usuario_id: 2,
-          usuario_clave: this.login.clave,
-          usuario_userName: this.login.usuario
+          usuario: this.login.clave,
+          clave: this.login.usuario
         }
         // console.log(loginUrl)
         // console.log(getHeader)
@@ -38,22 +36,19 @@
         // this.$store.dispatch('setUserObject', authUser)
         // this.$router.push({name: 'dashboard'})
         const authUser = {}
-        this.$http.get(loginUrl)
+        this.$http.post(loginUrl, postData, {headers: getHeader()})
           .then(response => {
             if (response.status === 200) {
-              console.log(getHeader)
-              console.log(postData)
-              console.log(userUrl)
-              console.log(authUser)
-              // authUser.access_token = response.data.access_token
-              // window.localStorage.setItem('authUser', JSON.stringfiy(authUser))
+              console.log(response.data)
+              authUser.access_token = response.data.access_token
+              window.localStorage.setItem('authUser', JSON.stringify(authUser))
               // this.$http.get(userUrl, {headers: getHeader()})
               //   .then(response => {
               //     authUser.usuario = response.body.usuario
               //     authUser.name = response.body.name
               //     window.localStorage.setItem('authUser', JSON.stringify(authUser))
-              //     this.$store.dispatch('setUserObject', authUser)
-              //     this.$router.push({name: 'dashboard'})
+              this.$store.dispatch('setUserObject', authUser)
+              this.$router.push({name: 'dashboard'})
               //   })
             }
           })
